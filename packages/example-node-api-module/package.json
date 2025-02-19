@@ -5,8 +5,17 @@
   "types": "index.d.ts",
   "description": "A simple Node-API module in C that adds two numbers.",
   "gypfile": true,
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "build/ios/Release",
+    "build/macos/Release",
+    "LICENSE-runtime-node-api.txt"
+  ],
   "scripts": {
-    "cmake": "cmake-js compile",
+    "cmake:macos": "cmake-js compile --CDTARGET_PLATFORM=macos --out=build/macos",
+    "cmake:ios": "cmake-js compile --CDTARGET_PLATFORM=ios --out=build/ios",
+    "cmake:ios-sim": "cmake-js compile --CDTARGET_PLATFORM=ios-sim --out=build/ios-sim",
     "format:binding": "node scripts/format-binding.mjs",
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
