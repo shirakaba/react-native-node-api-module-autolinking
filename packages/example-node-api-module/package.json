@@ -13,9 +13,10 @@
     "LICENSE-runtime-node-api.txt"
   ],
   "scripts": {
-    "cmake:macos": "cmake-js compile --CDTARGET_PLATFORM=macos --out=build/macos",
-    "cmake:ios": "cmake-js compile --CDTARGET_PLATFORM=ios --out=build/ios",
-    "cmake:ios-sim": "cmake-js compile --CDTARGET_PLATFORM=ios-sim --out=build/ios-sim",
+    "cmake:clean": "cmake-js clean",
+    "cmake:macosx": "cmake-js compile --CDSDK_NAME=macosx --out=build/macosx",
+    "cmake:iphoneos": "cmake-js compile --CDSDK_NAME=iphoneos --out=build/iphoneos",
+    "cmake:iphonesimulator": "cmake-js compile --CDSDK_NAME=iphonesimulator --out=build/iphonesimulator",
     "format:binding": "node scripts/format-binding.mjs",
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
