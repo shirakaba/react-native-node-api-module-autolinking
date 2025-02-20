@@ -16,6 +16,7 @@
     "build/xrsimulator/Release",
     "build/appletvos/Release",
     "build/appletvsimulator/Release",
+    "LICENSE-hermes.txt",
     "LICENSE-runtime-node-api.txt"
   ],
   "scripts": {
@@ -28,6 +29,7 @@
     "cmake:xrsimulator": "cmake-js compile --CDSDK_NAME=xrsimulator --out=build/xrsimulator",
     "cmake:appletvos": "cmake-js compile --CDSDK_NAME=appletvos --out=build/appletvos",
     "cmake:appletvsimulator": "cmake-js compile --CDSDK_NAME=appletvsimulator --out=build/appletvsimulator",
+    "build:apple": "./scripts/create_universal_framework.sh iphoneos iphonesimulator catalyst xros xrsimulator appletvos appletvsimulator",
     "format:binding": "node scripts/format-binding.mjs",
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
