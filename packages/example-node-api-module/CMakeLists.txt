@@ -5,25 +5,46 @@ cmake_policy(SET CMP0042 NEW)
 # With reference to:
 # https://github.com/NativeScript/runtime-node-api/blob/29151c404044ddb1f9270c64b1bbcc249db6352d/CMakeLists.txt#L22
 
-if(SDK_NAME STREQUAL "iphoneos")
-  set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "13.0")
+if(
+  SDK_NAME STREQUAL "iphoneos" OR
+  SDK_NAME STREQUAL "iphonesimulator" OR
+  SDK_NAME STREQUAL "catalyst" OR
+  SDK_NAME STREQUAL "xros" OR
+  SDK_NAME STREQUAL "xrsimulator" OR
+  SDK_NAME STREQUAL "appletvos" OR
+  SDK_NAME STREQUAL "appletvsimulator"
+)
+
+  # https://github.com/facebook/hermes/blob/2facf5b28f6ae68f7faa6df8c58341b305b2d5d3/utils/build-ios-framework.sh#L14-L20
+  if(
+    SDK_NAME STREQUAL "iphoneos" OR
+    SDK_NAME STREQUAL "xros" OR
+    SDK_NAME STREQUAL "xrsimulator" OR
+    SDK_NAME STREQUAL "appletvos"
+  )
+    set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "" FORCE)
+  else()
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE INTERNAL "" FORCE)
+  endif()
+
+  # https://github.com/facebook/hermes/blob/2facf5b28f6ae68f7faa6df8c58341b305b2d5d3/utils/build-apple-framework.sh#L58-L62
+  if(
+    SDK_NAME STREQUAL "iphoneos" OR
+    SDK_NAME STREQUAL "xros" OR
+    SDK_NAME STREQUAL "catalyst" OR
+    SDK_NAME STREQUAL "appletvos"
+  )
+    set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
+  else()
+    set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
+  endif()
+
   set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
   set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
+  # TODO: get iOS/tvOS/visionOS deployment target. For now, we just pass iOS.
   set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0")
-  set(TARGET_PLATFORM_IOS TRUE)
-  set(CMAKE_OSX_ARCHITECTURES "arm64;arm64e" CACHE INTERNAL "" FORCE)
-elseif(SDK_NAME STREQUAL "iphonesimulator")
-  set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "13.0")
-  set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
-  set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "NO")
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0")
-  set(TARGET_PLATFORM_IOS TRUE)
-  set(TARGET_PLATFORM_SIM TRUE)
-  set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "" FORCE)
 elseif(SDK_NAME STREQUAL "macosx")
-  set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.15")
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
-  set(TARGET_PLATFORM_MACOS TRUE)
   unset(BUILD_FRAMEWORK)
   set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "" FORCE)
 else()

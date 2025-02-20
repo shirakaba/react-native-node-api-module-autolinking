@@ -8,8 +8,14 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "build/ios/Release",
-    "build/macos/Release",
+    "build/macosx/Release",
+    "build/iphoneos/Release",
+    "build/iphonesimulator/Release",
+    "build/catalyst/Release",
+    "build/xros/Release",
+    "build/xrsimulator/Release",
+    "build/appletvos/Release",
+    "build/appletvsimulator/Release",
     "LICENSE-runtime-node-api.txt"
   ],
   "scripts": {
@@ -17,6 +23,11 @@
     "cmake:macosx": "cmake-js compile --CDSDK_NAME=macosx --out=build/macosx",
     "cmake:iphoneos": "cmake-js compile --CDSDK_NAME=iphoneos --out=build/iphoneos",
     "cmake:iphonesimulator": "cmake-js compile --CDSDK_NAME=iphonesimulator --out=build/iphonesimulator",
+    "cmake:catalyst": "cmake-js compile --CDSDK_NAME=catalyst --out=build/catalyst",
+    "cmake:xros": "cmake-js compile --CDSDK_NAME=xros --out=build/xros",
+    "cmake:xrsimulator": "cmake-js compile --CDSDK_NAME=xrsimulator --out=build/xrsimulator",
+    "cmake:appletvos": "cmake-js compile --CDSDK_NAME=appletvos --out=build/appletvos",
+    "cmake:appletvsimulator": "cmake-js compile --CDSDK_NAME=appletvsimulator --out=build/appletvsimulator",
     "format:binding": "node scripts/format-binding.mjs",
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
