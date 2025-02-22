@@ -26,7 +26,7 @@ else
 fi
 
 function get_release_version {
-  ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('addon.podspec').version"
+  node --print -e "require('./package.json').version"
 }
 
 function get_ios_deployment_target {
@@ -61,12 +61,22 @@ function configure_apple_framework {
     enable_bitcode="NO"
   fi
 
+  if [[ $1 == catalyst ]]; then
+    sysroot="macosx"
+    supports_maccatalyst="YES"
+  else
+    sysroot="$1"
+    supports_maccatalyst="NO"
+  fi
+
   "$4" compile --out="build/$1" \
-    --CDCMAKE_OSX_SYSROOT=$1 \
+    --CDCMAKE_OSX_SYSROOT=$sysroot \
+    --CDADDON_TARGET_PLATFORM="$1" \
     --CDCMAKE_OSX_ARCHITECTURES:STRING="$2" \
     --CDCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
+    --CDRELEASE_VERSION="$5" \
+    --CDCMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST="$supports_maccatalyst" \
     --CDCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
-    --CDADDON_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
     --CDCMAKE_BUILD_TYPE="$BUILD_TYPE"
 }
 
@@ -74,7 +84,7 @@ function configure_apple_framework {
 function build_apple_framework {
   echo "Building framework for $1 with architectures: $2"
 
-  configure_apple_framework "$1" "$2" "$3" "$4"
+  configure_apple_framework "$1" "$2" "$3" "$4" "$5"
 
   # if [[ "$BUILD_SYSTEM" == "Ninja" ]]; then
   #   (cd "./build_$1" && ninja install/strip)
