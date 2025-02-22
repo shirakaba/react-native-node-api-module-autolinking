@@ -8,7 +8,6 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "build/macosx/Release",
     "build/universal",
     "LICENSE-hermes.txt",
     "LICENSE-runtime-node-api.txt"
@@ -18,7 +17,7 @@
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
     "clean": "cmake-js clean",
-    "build": "./scripts/build-ios-framework.sh && ./scripts/build-mac-framework.sh"
+    "build": "./scripts/build-all-apple-frameworks.sh"
   },
   "devDependencies": {
     "cmake-js": "^7.3.0",
