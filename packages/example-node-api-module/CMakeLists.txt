@@ -61,30 +61,17 @@ include_directories(${CMAKE_JS_INC})
 file(GLOB SOURCE_FILES "addon.c")
 
 set(PROJECT_VERSION "1.2.3")
-set(PROJECT_VERSION_MAJOR "1")
-
-# It seems:
-# If we want `FRAMEWORK TRUE`, we need STATIC to compile successfully.
-# If we want `FRAMEWORK FALSE`, we can use SHARED or MODULE. We want SHARED, but
-# it's not compiling.
-# If no <type> is given for add_library, the default is STATIC or SHARED based
-# on the value of the BUILD_SHARED_LIBS variable.
-# If BUILD_SHARED_LIBS isn't specified, then the default library type is SHARED.
-# https://cmake.org/cmake/help/latest/command/add_library.html
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 # https://github.com/facebook/hermes/blob/2facf5b28f6ae68f7faa6df8c58341b305b2d5d3/API/hermes/CMakeLists.txt#L118
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  # PREFIX ""
-  # SUFFIX ".node"
   FRAMEWORK TRUE
-  # This is needed when the add_library() <type> is not STATIC (e.g. is SHARED).
-  # However, this may not be allowed on the App Store as it's not part of a
-  # system framework.
   LINK_FLAGS "-undefined dynamic_lookup"
-  # VERSION ${PROJECT_VERSION}
-  # SOVERSION ${PROJECT_VERSION}
-  FRAMEWORK_VERSION ${PROJECT_VERSION_MAJOR}
+  # - If unset, your binary gets stored under `addon.framework/Versions/A/`.
+  #   This approach is used by XcodeKit.framework.
+  # - Python3.framework stores its v3.9.6 binary under the 3.9/ folder.
+  # - hermes.framework stores its v0.12.0 binary under the 0/ folder.
+  FRAMEWORK_VERSION ${PROJECT_VERSION}
   MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${PROJECT_VERSION}
   MACOSX_FRAMEWORK_BUNDLE_VERSION ${PROJECT_VERSION}
   MACOSX_FRAMEWORK_IDENTIFIER dev.addon.${SDK_NAME}
