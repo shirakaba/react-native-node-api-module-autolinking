@@ -20,20 +20,11 @@
     "LICENSE-runtime-node-api.txt"
   ],
   "scripts": {
-    "cmake:clean": "cmake-js clean",
-    "cmake:macosx": "cmake-js compile --CDSDK_NAME=macosx --out=build/macosx",
-    "cmake:iphoneos": "cmake-js compile --CDSDK_NAME=iphoneos --out=build/iphoneos",
-    "cmake:iphonesimulator": "cmake-js compile --CDSDK_NAME=iphonesimulator --out=build/iphonesimulator",
-    "cmake:catalyst": "cmake-js compile --CDSDK_NAME=catalyst --out=build/catalyst",
-    "cmake:xros": "cmake-js compile --CDSDK_NAME=xros --out=build/xros",
-    "cmake:xrsimulator": "cmake-js compile --CDSDK_NAME=xrsimulator --out=build/xrsimulator",
-    "cmake:appletvos": "cmake-js compile --CDSDK_NAME=appletvos --out=build/appletvos",
-    "cmake:appletvsimulator": "cmake-js compile --CDSDK_NAME=appletvsimulator --out=build/appletvsimulator",
-    "build:apple": "./scripts/create_universal_framework.sh iphoneos iphonesimulator catalyst xros xrsimulator appletvos appletvsimulator",
     "format:binding": "node scripts/format-binding.mjs",
     "format": "prettier . --write && npm run format:binding",
     "lint": "eslint .",
-    "build": "node-gyp rebuild"
+    "clean": "cmake-js clean",
+    "build": "./scripts/build-ios-framework.sh && ./scripts/build-mac-framework.sh"
   },
   "devDependencies": {
     "cmake-js": "^7.3.0",
