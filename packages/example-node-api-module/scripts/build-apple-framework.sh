@@ -45,6 +45,18 @@ function get_mac_deployment_target {
   ruby -rcocoapods-core -rjson -e "puts Pod::Specification.from_file('addon.podspec').deployment_target('osx')"
 }
 
+function get_catalyst_deployment_target {
+    local user_target="$1"
+    local min_target="$2"
+
+    # Compare versions using sort -V (which understands version numbers)
+    if [[ "$(printf "%s\n%s" "$user_target" "$min_target" | sort -V | head -n1)" == "$user_target" ]]; then
+        echo "$min_target"
+    else
+        echo "$user_target"
+    fi
+}
+
 # We could simply use `npx cmake-js` each time, but manually resolving the path
 # to the binary up front should shave off a little time on each call.
 function get_cmake_js_path {
@@ -64,16 +76,28 @@ function configure_apple_framework {
   if [[ $1 == catalyst ]]; then
     sysroot="macosx"
     supports_maccatalyst="YES"
+
+    # For Catalyst, CMAKE_OSX_DEPLOYMENT_TARGET determines the <VERSION_MIN> in
+    # `--target=<ARCH>-apple-ios<VERSION_MIN>-macabi`, which refers to which
+    # version of the iOS SDK the macOS app should target.
+    # https://gitlab.kitware.com/cmake/cmake/-/blob/2785364b7ba32de1f718e9e5fd049a039414a669/Modules/Platform/Apple-Clang.cmake
+    #
+    # 14.0 is the minimum iOS version that supports both x86 and arm64, so we
+    # restrict the minimum target to whatever is the lower of the user's iOS.
+    # https://doc.rust-lang.org/nightly/rustc/platform-support/apple-ios-macabi.html#os-version
+    local min_target="14.0"
+    osx_deployment_target=$(get_catalyst_deployment_target $3 $min_target)
   else
     sysroot="$1"
     supports_maccatalyst="NO"
+    osx_deployment_target="$3"
   fi
 
   "$4" compile --out="build/$1" \
     --CDCMAKE_OSX_SYSROOT=$sysroot \
     --CDADDON_TARGET_PLATFORM="$1" \
     --CDCMAKE_OSX_ARCHITECTURES:STRING="$2" \
-    --CDCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
+    --CDCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$osx_deployment_target" \
     --CDRELEASE_VERSION="$5" \
     --CDCMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST="$supports_maccatalyst" \
     --CDCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
@@ -93,9 +117,8 @@ function build_apple_framework {
   # fi
 }
 
-# Accepts an array of frameworks and will place all of
-# the architectures into an universal folder and then remove
-# the merged frameworks from destroot
+# Accepts an array of frameworks and will place all of the architectures into a
+# universal folder and then remove the merged frameworks from the build folder
 function create_universal_framework {
   cd ./build || exit 1
 

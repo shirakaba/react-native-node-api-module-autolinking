@@ -1,47 +1,19 @@
 include(CMakePrintHelpers)
 
-cmake_print_variables(ADDON_TARGET_PLATFORM CMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST)
+cmake_print_variables(ADDON_TARGET_PLATFORM CMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST CMAKE_OSX_DEPLOYMENT_TARGET)
 
-# v3.28 is the minimum that supports xros and xrsimulator.
-cmake_minimum_required(VERSION 3.28)
+# - v3.28 is the minimum that supports visionOS.
+# - v3.31 is the minimum that support Catalyst.
+cmake_minimum_required(VERSION 3.31)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
-# TODO: investigate how `xcodebuild archive` works
-# https://github.com/NativeScript/ios/blob/d4f3b680ba77823d9e03b82548ead26706993b99/build_nativescript.sh#L64
-# Maybe we should get cmake to generate an xcodeproj and call xcodebuild from it?
-# Also see: https://gitlab.kitware.com/cmake/cmake/-/issues/20132#note_673870
 if(ADDON_TARGET_PLATFORM MATCHES "catalyst")
-  # The PR that added Catalyst support to cmake:
+  # This hybrid of iOS and macosx unlocks all cmake's Catalyst support, as per
+  # the PR that added Catalyst support to cmake:
   # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/9595
-
-  # This hybrid of iOS and macosx unlocks all cmake's Catalyst support.
   set(CMAKE_SYSTEM_NAME "iOS")
   set(CMAKE_OSX_SYSROOT "macosx")
-
-  # While this usually fills in the version number in
-  # '-mmacosx-version-min=14.0', when you set CMAKE_SYSTEM_NAME to 'iOS', it
-  # instead fills in '--target=<ARCH>-apple-ios<VERSION_MIN>-macabi'.
-  # TODO: take this from the shell script
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0")
-
-  # Not sure which of these are real flags and whether any even contribute.
-  set(CMAKE_XCODE_ATTRIBUTE_MACCATALYST_DEPLOYMENT_TARGET "13.0")
-  set(CMAKE_XCODE_ATTRIBUTE_MACCATALYST_SUPPORTED_PLATFORMS "macosx")
-  set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
-  set(CMAKE_XCODE_GENERATE_SCHEME ON)
-
-  # https://gitlab.kitware.com/cmake/cmake/-/issues/20132#note_897847
-  # https://gitlab.kitware.com/cmake/cmake/-/issues/24650
-  # cc: warning: overriding '-mmacosx-version-min=12.0' option with '-target x86_64-arm64-apple-ios13.0-macabi' [-Woverriding-t-option]
-  # cc: error: invalid version number in '-target x86_64-arm64-apple-ios13.0-macabi'
-  # set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-target x86_64-arm64-apple-ios12.0-macabi -isystem ${CMAKE_OSX_SYSROOT}/System/iOSSupport/usr/include")
-  # set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-target x86_64-arm64-apple-ios12.0-macabi -isystem ${CMAKE_OSX_SYSROOT}/System/iOSSupport/usr/include")
-  # set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-  # set(CMAKE_HAVE_THREADS_LIBRARY 1)
-  # set(CMAKE_USE_WIN32_THREADS_INIT 0)
-  # set(CMAKE_USE_PTHREADS_INIT 1)
-  # set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif()
 
 project (addon)
