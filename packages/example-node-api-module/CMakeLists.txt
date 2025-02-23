@@ -8,14 +8,6 @@ cmake_minimum_required(VERSION 3.31)
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
-if(ADDON_TARGET_PLATFORM MATCHES "catalyst")
-  # This hybrid of iOS and macosx unlocks all cmake's Catalyst support, as per
-  # the PR that added Catalyst support to cmake:
-  # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/9595
-  set(CMAKE_SYSTEM_NAME "iOS")
-  set(CMAKE_OSX_SYSROOT "macosx")
-endif()
-
 project (addon)
 
 add_definitions(-DNAPI_VERSION=4)

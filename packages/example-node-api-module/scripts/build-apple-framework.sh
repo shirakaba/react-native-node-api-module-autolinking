@@ -74,6 +74,9 @@ function configure_apple_framework {
   fi
 
   if [[ $1 == catalyst ]]; then
+    # The key to Catalyst is setting CMAKE_SYSTEM_NAME="iOS" and
+    # CMAKE_OSX_SYSROOT="macosx", as per the PR that added cmake support for it:
+    # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/9595/diffs#2acbc74ef582380cce975d1d70a872319f99a336_47_48
     sysroot="macosx"
     supports_maccatalyst="YES"
 
@@ -82,11 +85,12 @@ function configure_apple_framework {
     # version of the iOS SDK the macOS app should target.
     # https://gitlab.kitware.com/cmake/cmake/-/blob/2785364b7ba32de1f718e9e5fd049a039414a669/Modules/Platform/Apple-Clang.cmake
     #
-    # 14.0 is the minimum iOS version that supports both x86 and arm64, so we
-    # restrict the minimum target to whatever is the lower of the user's iOS.
+    # 14.0 is the minimum iOS version that supports a Mac ABI for both x86 and
+    # arm64, so even if our podspec specifies a lower iOS target than that, we
+    # restrict the Catalyst target to be at least 14.0.
     # https://doc.rust-lang.org/nightly/rustc/platform-support/apple-ios-macabi.html#os-version
-    local min_target="14.0"
-    osx_deployment_target=$(get_catalyst_deployment_target $3 $min_target)
+    local min_ios_target="14.0"
+    osx_deployment_target=$(get_catalyst_deployment_target $3 $min_ios_target)
   else
     sysroot="$1"
     supports_maccatalyst="NO"
@@ -99,6 +103,7 @@ function configure_apple_framework {
     --CDCMAKE_OSX_ARCHITECTURES:STRING="$2" \
     --CDCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$osx_deployment_target" \
     --CDRELEASE_VERSION="$5" \
+    --CDCMAKE_SYSTEM_NAME="$6" \
     --CDCMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST="$supports_maccatalyst" \
     --CDCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
     --CDCMAKE_BUILD_TYPE="$BUILD_TYPE"
@@ -108,7 +113,7 @@ function configure_apple_framework {
 function build_apple_framework {
   echo "Building framework for $1 with architectures: $2"
 
-  configure_apple_framework "$1" "$2" "$3" "$4" "$5"
+  configure_apple_framework "$1" "$2" "$3" "$4" "$5" "$6"
 
   # if [[ "$BUILD_SYSTEM" == "Ninja" ]]; then
   #   (cd "./build_$1" && ninja install/strip)
