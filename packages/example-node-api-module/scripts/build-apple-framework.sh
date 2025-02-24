@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# This source code is made with reference to:
+# https://github.com/facebook/hermes/blob/main/utils/build-apple-framework.sh
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the

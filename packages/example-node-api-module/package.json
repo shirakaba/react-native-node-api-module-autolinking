@@ -1,6 +1,9 @@
 {
   "name": "@react-native-node-api-module-autolinking/example-node-api-module",
   "version": "1.0.0",
+  "homepage": "https://github.com/shirakaba/react-native-node-api-module-autolinking",
+  "author": "Jamie Birch <14055146+shirakaba@users.noreply.github.com>",
+  "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
   "description": "A simple Node-API module in C that adds two numbers.",
@@ -13,8 +16,7 @@
     "LICENSE-runtime-node-api.txt"
   ],
   "scripts": {
-    "format:binding": "node scripts/format-binding.mjs",
-    "format": "prettier . --write && npm run format:binding",
+    "format": "prettier . --write",
     "lint": "eslint .",
     "clean": "cmake-js clean",
     "build": "./scripts/build-all-apple-frameworks.sh"
