@@ -1,3 +1,7 @@
+const {dlopen} = require('node:process');
+const {constants} = require('node:os');
+const path = require('node:path');
+
 function loadAddon(platform = determinePlatform()) {
   if (!platform) {
     throw new Error("Unable to figure out which platform we're on.");
@@ -8,7 +12,23 @@ function loadAddon(platform = determinePlatform()) {
 
   switch (platform) {
     case 'darwin': {
-      addon = require('./build/macos/Release/example-node-api-module.node');
+      // XCFramework binaries don't normally have file extensions (e.g. .node),
+      // and I'd rather not introduce a post-build step to patch the
+      // XCFrameworks to add symlinks in. It feels most sensible to try to use
+      // them as-is. So require() might be out of the question.
+      // addon = require('./build/universal/addon.xcframework/macos-arm64_x86_64/addon.framework/Versions/Current/addon');
+
+      const module = {exports: {}};
+      dlopen(
+        module,
+        path.join(
+          __dirname,
+          './build/universal/addon.xcframework/macos-arm64_x86_64/addon.framework/Versions/Current/addon',
+        ),
+        constants.dlopen.RTLD_NOW,
+      );
+
+      addon = module.exports;
       break;
     }
     case 'android': {

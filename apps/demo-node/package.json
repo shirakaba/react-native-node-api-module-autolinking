@@ -2,6 +2,7 @@
   "name": "@react-native-node-api-module-autolinking/demo-node",
   "version": "0.0.1",
   "scripts": {
+    "start": "node ./index.js",
     "format": "prettier . --write",
     "lint": "eslint ."
   },
