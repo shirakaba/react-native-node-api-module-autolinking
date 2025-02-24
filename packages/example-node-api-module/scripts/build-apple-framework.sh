@@ -122,8 +122,8 @@ function build_apple_framework {
   # fi
 }
 
-# Accepts an array of frameworks and will place all of the architectures into a
-# universal folder and then remove the merged frameworks from the build folder
+# Accepts an array of framework build directories and generates a universal
+# XCFramework from them.
 function create_universal_framework {
   cd ./build || exit 1
 
@@ -139,9 +139,15 @@ function create_universal_framework {
   mkdir universal
   xcodebuild -create-xcframework $args -output "universal/addon.xcframework"
 
-  # for platform in $@; do
-  #   rm -r "$platform"
-  # done
+  cd - || exit 1
+}
+
+function clean_up_frameworks {
+  cd ./build || exit 1
+
+  for platform in $@; do
+    rm -r "$platform"
+  done
 
   cd - || exit 1
 }

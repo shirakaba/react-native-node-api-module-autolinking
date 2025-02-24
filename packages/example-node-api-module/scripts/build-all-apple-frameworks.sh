@@ -31,7 +31,9 @@ if [ ! -d build/universal/Release/addon.xcframework ]; then
     build_apple_framework "appletvsimulator" "x86_64;arm64" "$tvos_deployment_target" "$cmake_js" "$release_version" "tvOS"
     build_apple_framework "macosx" "x86_64;arm64" "$mac_deployment_target" "$cmake_js" "$release_version" "Darwin"
 
-    create_universal_framework "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator" "appletvos" "appletvsimulator" "macosx"
+    platforms=("iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator" "appletvos" "appletvsimulator" "macosx")
+    create_universal_framework "${platforms[@]}"
+    clean_up_frameworks "${platforms[@]}"
 else
     echo "Skipping; Clean \"build\" to rebuild".
 fi
