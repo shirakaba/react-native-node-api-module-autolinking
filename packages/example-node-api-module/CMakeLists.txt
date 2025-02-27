@@ -1,6 +1,6 @@
 include(CMakePrintHelpers)
 
-cmake_print_variables(ADDON_TARGET_PLATFORM CMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST CMAKE_OSX_DEPLOYMENT_TARGET)
+cmake_print_variables(ADDON_TARGET_PLATFORM CMAKE_XCODE_ATTRIBUTE_SUPPORTS_MACCATALYST CMAKE_OSX_DEPLOYMENT_TARGET CMAKE_JS_INC)
 
 # - v3.28 is the minimum that supports visionOS.
 # - v3.31 is the minimum that support Catalyst.
@@ -19,7 +19,6 @@ file(GLOB SOURCE_FILES "addon.c")
 set(PROJECT_VERSION ${RELEASE_VERSION})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
-
 if(APPLE)
   # https://github.com/facebook/hermes/blob/2facf5b28f6ae68f7faa6df8c58341b305b2d5d3/API/hermes/CMakeLists.txt#L118
   set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -36,7 +35,10 @@ if(APPLE)
   )
 endif()
 
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+# It sounds like `--undefined dynamic_lookup` is Apple-specific, so for Android
+# I am trying `--unresolved-symbols=ignore-all`.
+# target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} PRIVATE -Wl,--unresolved-symbols=ignore-all)
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib
